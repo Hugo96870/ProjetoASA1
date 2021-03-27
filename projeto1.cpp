@@ -40,19 +40,26 @@ void processInput(FILE *inputf, int *numberNodes, int *numberEdges, vector<vecto
 
 }
 
-int FindFirstOutput(vector< vector<int>>& edges2){
-    int counter = 0, i, j;
+int FindFirstOutput(vector< vector<int>>& edges2, vector<int>& InicialNodes){
+    int counter = 0, i;
     for(i = 0; i < edges2.size(); i++){
-        if(edges2[i].empty())
+        if(edges2[i].empty()){
+            InicialNodes.push_back(i+1);
             counter++;
+        }
     }
     return counter;
+}
+
+int FindSecondOutput(vector<vector<int>>& edges2, vector<int>& InicialNodes){
+    /*FazerDFS 2 vezes*/
 }
 
 int main(int argc,char* argv[]){
 
     int *numberNodes, *numberEdges, firstOutput, secondOutput;
     vector <vector <int>> edges1, edges2;
+    vector<int> InicialNodes;
     FILE* inputf;
 
     if ((inputf = fopen("input","r")) == nullptr){
@@ -62,7 +69,9 @@ int main(int argc,char* argv[]){
 
     processInput(inputf, numberNodes, numberEdges, edges1, edges2);
 
-    firstOutput = FindFirstOutput(edges2);
+    firstOutput = FindFirstOutput(edges2, InicialNodes);
+
+    secondOutput = FindSecondOutput(edges1, InicialNodes);
 
     cout("%d %d", firstOutput, secondOutput);
 
