@@ -9,21 +9,9 @@
 
 using namespace std;
 
-/*void inputReceiver(int *numberNodes, int *numberEdges, list <list <int>> *edges){
-    FILE* inputf;
-    if ((inputf = fopen("input","r")) == NULL){
-        printf("Error: Cannot open file.\n");
-        exit(EXIT_FAILURE);
-    };
+void processInput(int numberNodes, int numberEdges, vector<vector<int>>& edges1, vector<vector<int>>& edges2){
 
-    scanf("%d %d", numberNodes, numberEdges)
-}*/
-
-void processInput(FILE *inputf, int *numberNodes, int *numberEdges, vector<vector<int>>& edges1, vector<vector<int>>& edges2){
-
-    int a, b, i;
-
-    fscanf(inpuf,"%d %d", numberNodes, numberEdges);
+    int a, b;
 
     edges1.reserve(numberEdges);
     edges2.reserve(numberEdges);
@@ -33,7 +21,8 @@ void processInput(FILE *inputf, int *numberNodes, int *numberEdges, vector<vecto
         edges2.insert(edges2.begin() + i, vector<int>());
     }
     for(int i = 0; i < numberEdges; i++){
-        fscanf(inputf,"%d %d", &a, &b);
+        scanf("%d %d", &a, &b);
+        
         edges1[a-1].push_back(b);
         edges2[b-1].push_back(a);
     }
@@ -55,25 +44,21 @@ int FindSecondOutput(vector<vector<int>>& edges2, vector<int>& InicialNodes){
     /*FazerDFS 2 vezes*/
 }
 
-int main(int argc,char* argv[]){
+int main(){
 
-    int *numberNodes, *numberEdges, firstOutput, secondOutput;
+    int numberNodes, numberEdges, firstOutput, secondOutput;
     vector <vector <int>> edges1, edges2;
     vector<int> InicialNodes;
-    FILE* inputf;
 
-    if ((inputf = fopen("input","r")) == nullptr){
-        printf("Error: Cannot open file.\n");
-        exit(EXIT_FAILURE);
-    };
+    scanf("%d %d", &numberNodes, &numberEdges);
 
-    processInput(inputf, numberNodes, numberEdges, edges1, edges2);
+    processInput(numberNodes, numberEdges, edges1, edges2);
 
     firstOutput = FindFirstOutput(edges2, InicialNodes);
 
     secondOutput = FindSecondOutput(edges1, InicialNodes);
 
-    cout("%d %d", firstOutput, secondOutput);
+    cout << firstOutput<< " " << secondOutput << endl;
 
     return 0;
 }
