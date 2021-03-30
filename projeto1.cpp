@@ -16,7 +16,7 @@ class Graph{
 public:
     Graph(int V);
     void addEdge(int v, int w);
-    int DFS(int s, int counter);
+    int DFS(int s, int counter, vector<vector<int>>& edges1);
 };
 
 Graph::Graph(int V)
@@ -31,30 +31,32 @@ void Graph::addEdge(int v, int w)
 }
 
 
-int Graph::DFS(int s, int counter){
+int Graph::DFS(int s, int counter, vector<vector<int>>& edges1){
 
     vector<bool> visited(V, false);
     stack<int> stack;
     stack.push(s);
-    int aux = 0;
+    int aux = 0, depth = 0;
 
     while (!stack.empty()){
         s = stack.top();
         stack.pop();
         aux ++;
 
-        if (!visited[s])
-            visited[s] = true;
+        if(edges1[s].size() == 1)
+            depth +=1;
 
-        for (auto i = adj[s].begin(); i != adj[s].end(); ++i){
-            if (!visited[*i])
-                stack.push(*i);
+        for(int j = 0; j < edges1[s].size(); j++){
+            if (!visited[edges1[s][j]])
+                stack.push(edges1[s][j]);
         }
 
-        if (adj[s].empty()){
+        if (edges1[s].empty()){
             if (aux > counter)
                 counter = aux;
-            aux--;
+            for(int i = 0; i < (depth + 1); i++)
+                aux--;
+            depth = 0;
         }
     }
     return counter;
@@ -74,7 +76,7 @@ void processInput(Graph g, int numberNodes, int numberEdges, vector<vector<int>>
     for(int i = 0; i < numberEdges; i++){
         scanf("%d %d", &a, &b);
         g.addEdge(a - 1, b - 1);
-        edges1[a-1].push_back(b);
+        edges1[a-1].push_back(b-1);
         edges2[b-1].push_back(a);
     }
 
@@ -91,18 +93,18 @@ int FindFirstOutput(vector< vector<int>>& edges2, vector<int>& InicialNodes){
     return counter;
 }
 
-int FindSecondOutput(Graph g, vector<vector<int>>& edges2, vector<int>& InicialNodes, int numberNodes){
+int FindSecondOutput(Graph g,vector<vector<int>>& edges2, vector<vector<int>>& edges1, vector<int>& InicialNodes, int numberNodes){
     int i, counter = 0, largest = 0;
     for (i = 0; i < numberNodes; i++){
         if (edges2[i].empty()){
-            counter = g.DFS(i, counter);
+            counter = g.DFS(i, counter, edges1);
         }
         if (counter > largest){
             largest = counter;
         }
         counter = 0;
     }
-
+    return largest;
 }
 
 int main(){
@@ -117,7 +119,7 @@ int main(){
 
     firstOutput = FindFirstOutput(edges2, InicialNodes);
 
-    secondOutput = FindSecondOutput(g, edges1, InicialNodes, numberNodes);
+    secondOutput = FindSecondOutput(g, edges2, edges1, InicialNodes, numberNodes);
 
     cout << firstOutput<< " " << secondOutput << endl;
 
