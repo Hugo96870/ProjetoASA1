@@ -7,6 +7,7 @@
 #include <vector>
 #include <list>
 #include <stack>
+#include <algorithm>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ class Graph{
 public:
     Graph(int V);
     void addEdge(int v, int w);
-    int DFS(int s, int counter, vector<vector<int>>& edges1);
+    int DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<int>>& edges2);
 };
 
 Graph::Graph(int V)
@@ -25,35 +26,56 @@ Graph::Graph(int V)
     adj = new list<int>[V];
 }
 
-void Graph::addEdge(int v, int w)
-{
+void Graph::addEdge(int v, int w){
     adj[v].push_back(w);
 }
 
+int auxiliary(vector<int>& edges1, stack<int> stack, vector<bool>& visited){
+    int i, result = 1;
+    for (i = 0; i < edges1.size(); i++){
+        if (!visited[edges1[i]]) {
+            result = 0;
+            break;
+        }
+    }
+    if (!stack.empty() && (count(edges1.begin(), edges1.end(), stack.top()) == 0))
+        result = 0;
+    return result;
+}
 
-int Graph::DFS(int s, int counter, vector<vector<int>>& edges1){
+int Graph::DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<int>>& edges2){
 
+    vector<int> father(V, -1);
     vector<bool> visited(V, false);
     stack<int> stack;
     stack.push(s);
-    int aux = 0, depth = 0;
+    int aux = 0, depth = 0, verification = 0;
 
     while (!stack.empty()){
         s = stack.top();
         stack.pop();
         aux ++;
+        visited[s] = true;
 
         if(edges1[s].size() == 1)
             depth +=1;
 
         for(int j = 0; j < edges1[s].size(); j++){
-            if (!visited[edges1[s][j]])
                 stack.push(edges1[s][j]);
+                father[edges1[s][j]] = s;
+        }
+
+        if (!edges2[s].empty() && auxiliary(edges1[father[s]], stack, visited)){
+            verification += 1;
         }
 
         if (edges1[s].empty()){
-            if (aux > counter)
+            aux -= verification;
+            verification = 0;
+            if (aux > counter){
                 counter = aux;
+            }
+
             for(int i = 0; i < (depth + 1); i++)
                 aux--;
             depth = 0;
@@ -97,7 +119,7 @@ int FindSecondOutput(Graph g,vector<vector<int>>& edges2, vector<vector<int>>& e
     int i, counter = 0, largest = 0;
     for (i = 0; i < numberNodes; i++){
         if (edges2[i].empty()){
-            counter = g.DFS(i, counter, edges1);
+            counter = g.DFS(i, counter, edges1, edges2);
         }
         if (counter > largest){
             largest = counter;
