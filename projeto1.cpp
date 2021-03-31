@@ -1,8 +1,3 @@
-/* GROUP: 50
- * NAME: Bernardo Castico ist196845
- * NAME: Hugo Rita ist196870
- */
-
 #include <iostream>
 #include <vector>
 #include <list>
@@ -30,18 +25,6 @@ void Graph::addEdge(int v, int w){
     adj[v].push_back(w);
 }
 
-int auxiliary(vector<int>& edges1, stack<int> stack, vector<bool>& visited){
-    int i, result = 1;
-    for (i = 0; i < edges1.size(); i++){
-        if (!visited[edges1[i]]) {
-            result = 0;
-            break;
-        }
-    }
-    if (!stack.empty() && (count(edges1.begin(), edges1.end(), stack.top()) == 0))
-        result = 0;
-    return result;
-}
 
 int Graph::DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<int>>& edges2){
 
@@ -49,7 +32,7 @@ int Graph::DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<in
     vector<bool> visited(V, false);
     stack<int> stack;
     stack.push(s);
-    int aux = 0, depth = 0, verification = 0;
+    int aux = 0, depth = 0;
 
     while (!stack.empty()){
         s = stack.top();
@@ -60,18 +43,14 @@ int Graph::DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<in
         if(edges1[s].size() == 1)
             depth +=1;
 
-        for(int j = 0; j < edges1[s].size(); j++){
+        for(int j = 0; j < int(edges1[s].size()); j++){
                 stack.push(edges1[s][j]);
                 father[edges1[s][j]] = s;
         }
 
-        if (!edges2[s].empty() && auxiliary(edges1[father[s]], stack, visited)){
-            verification += 1;
-        }
 
         if (edges1[s].empty()){
-            aux -= verification;
-            verification = 0;
+            
             if (aux > counter){
                 counter = aux;
             }
@@ -96,17 +75,18 @@ void processInput(Graph g, int numberNodes, int numberEdges, vector<vector<int>>
         edges2.insert(edges2.begin() + i, vector<int>());
     }
     for(int i = 0; i < numberEdges; i++){
-        scanf("%d %d", &a, &b);
+        if(!scanf("%d %d", &a, &b)){
+			cout << "Erro" << endl;
+		}
         g.addEdge(a - 1, b - 1);
         edges1[a-1].push_back(b-1);
         edges2[b-1].push_back(a);
-    }
-
+}
 }
 
 int FindFirstOutput(vector< vector<int>>& edges2, vector<int>& InicialNodes){
     int counter = 0, i;
-    for(i = 0; i < edges2.size(); i++){
+    for(i = 0; i < int(edges2.size()); i++){
         if(edges2[i].empty()){
             InicialNodes.push_back(i+1);
             counter++;
@@ -135,7 +115,11 @@ int main(){
     vector <vector <int>> edges1, edges2;
     vector<int> InicialNodes;
 
-    scanf("%d %d", &numberNodes, &numberEdges);
+    if(!scanf("%d %d", &numberNodes, &numberEdges)){
+        cout << "Erro" << endl;
+
+    }
+
     Graph g(numberNodes);
     processInput(g, numberNodes, numberEdges, edges1, edges2);
 
