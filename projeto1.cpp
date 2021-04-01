@@ -40,7 +40,7 @@ int Graph::DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<in
         aux ++;
         visited[s] = true;
 
-        if(edges1[s].size() == 1)
+        if(edges1[s].size() == 1 && !stack.empty())
             depth +=1;
 
         for(int j = 0; j < int(edges1[s].size()); j++){
@@ -50,7 +50,7 @@ int Graph::DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<in
 
 
         if (edges1[s].empty()){
-            
+
             if (aux > counter){
                 counter = aux;
             }
