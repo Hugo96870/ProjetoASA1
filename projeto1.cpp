@@ -24,7 +24,7 @@ Graph::Graph(int V)
 void Graph::addEdge(int v, int w){
     adj[v].push_back(w);
 }
-
+int auxiliar(vector<vector<int>> edges1)
 
 int Graph::DFS(int w, int counter, vector<vector<int>>& edges1, vector<vector<int>>& edges2){
 
@@ -40,12 +40,12 @@ int Graph::DFS(int w, int counter, vector<vector<int>>& edges1, vector<vector<in
         aux ++;
         visited[s] = true;
 
-        if((edges1[s].size() == 1 && !stack.empty()) || (stack.empty() && s != w))
+        if((edges1[s].size() == 1 && !stack.empty()))
             depth +=1;
 
         for(int j = 0; j < int(edges1[s].size()); j++){
-                stack.push(edges1[s][j]);
-                father[edges1[s][j]] = s;
+            stack.push(edges1[s][j]);
+            father[edges1[s][j]] = s;
         }
 
 
@@ -76,12 +76,12 @@ void processInput(Graph g, int numberNodes, int numberEdges, vector<vector<int>>
     }
     for(int i = 0; i < numberEdges; i++){
         if(!scanf("%d %d", &a, &b)){
-			cout << "Erro" << endl;
-		}
+            cout << "Erro" << endl;
+        }
         g.addEdge(a - 1, b - 1);
         edges1[a-1].push_back(b-1);
         edges2[b-1].push_back(a);
-}
+    }
 }
 
 int FindFirstOutput(vector< vector<int>>& edges2, vector<int>& InicialNodes){
