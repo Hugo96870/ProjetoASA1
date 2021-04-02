@@ -26,13 +26,13 @@ void Graph::addEdge(int v, int w){
 }
 
 
-int Graph::DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<int>>& edges2){
+int Graph::DFS(int w, int counter, vector<vector<int>>& edges1, vector<vector<int>>& edges2){
 
     vector<int> father(V, -1);
     vector<bool> visited(V, false);
     stack<int> stack;
-    stack.push(s);
-    int aux = 0, depth = 0;
+    stack.push(w);
+    int aux = 0, depth = 0, s;
 
     while (!stack.empty()){
         s = stack.top();
@@ -40,7 +40,7 @@ int Graph::DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<in
         aux ++;
         visited[s] = true;
 
-        if(edges1[s].size() == 1 && !stack.empty())
+        if((edges1[s].size() == 1 && !stack.empty()) || (stack.empty() && s != w))
             depth +=1;
 
         for(int j = 0; j < int(edges1[s].size()); j++){
