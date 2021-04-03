@@ -4,63 +4,63 @@
 #include <stack>
 #include <algorithm>
 
+#define WHITE 0
+#define GREY 1
+#define BLACK 2
+
 using namespace std;
 
 class Graph{
     int V;
-    list <int> *adj;
 public:
     Graph(int V);
-    void addEdge(int v, int w);
-    int DFS(int s, int counter, vector<vector<int>>& edges1, vector<vector<int>>& edges2);
+    int DFS(int s, vector<vector<int>>& edges1);
 };
 
-Graph::Graph(int V)
-{
+Graph::Graph(int V) {
     this->V = V;
-    adj = new list<int>[V];
 }
 
-void Graph::addEdge(int v, int w){
-    adj[v].push_back(w);
-}
-int auxiliar(vector<vector<int>> edges1)
 
-int Graph::DFS(int w, int counter, vector<vector<int>>& edges1, vector<vector<int>>& edges2){
+int Graph::DFS(int w, vector<vector<int>>& edges1){
 
     vector<int> father(V, -1);
-    vector<bool> visited(V, false);
+    vector<int> color(V, WHITE);
+    vector<int> nodesDown(V, 1);
     stack<int> stack;
     stack.push(w);
-    int aux = 0, depth = 0, s;
+    int s;
 
     while (!stack.empty()){
         s = stack.top();
-        stack.pop();
-        aux ++;
-        visited[s] = true;
 
-        if((edges1[s].size() == 1 && !stack.empty()))
-            depth +=1;
+        if(color[s] == WHITE){
 
-        for(int j = 0; j < int(edges1[s].size()); j++){
-            stack.push(edges1[s][j]);
-            father[edges1[s][j]] = s;
-        }
+            color[s] = GREY;
 
-
-        if (edges1[s].empty()){
-
-            if (aux > counter){
-                counter = aux;
+            for(int j = 0; j < int(edges1[s].size()); j++){
+                stack.push(edges1[s][j]);
+                father[edges1[s][j]] = s;
             }
-
-            for(int i = 0; i < (depth + 1); i++)
-                aux--;
-            depth = 0;
         }
+        else if(color[s] == GREY){
+            color[s] = BLACK;
+            if(father[s] != -1)
+                if(nodesDown[father[s]] < 1 + nodesDown[s])
+                    nodesDown[father[s]] = 1 + nodesDown[s];
+
+            stack.pop();
+        }
+
+        else{
+            if(nodesDown[father[s]] < 1 + nodesDown[s]){
+                nodesDown[father[s]] = 1 + nodesDown[s];
+            }
+            stack.pop();
+        }
+
     }
-    return counter;
+    return nodesDown[w];
 }
 
 void processInput(Graph g, int numberNodes, int numberEdges, vector<vector<int>>& edges1, vector<vector<int>>& edges2){
@@ -76,12 +76,11 @@ void processInput(Graph g, int numberNodes, int numberEdges, vector<vector<int>>
     }
     for(int i = 0; i < numberEdges; i++){
         if(!scanf("%d %d", &a, &b)){
-            cout << "Erro" << endl;
-        }
-        g.addEdge(a - 1, b - 1);
+			cout << "Erro" << endl;
+		}
         edges1[a-1].push_back(b-1);
         edges2[b-1].push_back(a);
-    }
+}
 }
 
 int FindFirstOutput(vector< vector<int>>& edges2, vector<int>& InicialNodes){
@@ -96,15 +95,15 @@ int FindFirstOutput(vector< vector<int>>& edges2, vector<int>& InicialNodes){
 }
 
 int FindSecondOutput(Graph g,vector<vector<int>>& edges2, vector<vector<int>>& edges1, vector<int>& InicialNodes, int numberNodes){
-    int i, counter = 0, largest = 0;
+    int i, counter = 1, largest = 0;
     for (i = 0; i < numberNodes; i++){
-        if (edges2[i].empty()){
-            counter = g.DFS(i, counter, edges1, edges2);
+        if (edges2[i].empty() && !edges1[i].empty()){
+            counter = g.DFS(i, edges1);
         }
         if (counter > largest){
             largest = counter;
         }
-        counter = 0;
+        counter = 1;
     }
     return largest;
 }
